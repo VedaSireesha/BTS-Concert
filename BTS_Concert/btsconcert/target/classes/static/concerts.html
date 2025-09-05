@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upcoming BTS Concerts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h2 {
+      color: purple;
+    }
+    .error {
+      color: red;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      background: #fff;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upcoming BTS Concerts</h2>
+  <ul id="concertList"></ul>
+  <div id="error" class="error" style="display:none;">❌ Failed to load concerts.</div>
+
+  <script>
+    fetch('/api/concerts')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not OK");
+        }
+        return response.json();
+      })
+      .then(data => {
+        const list = document.getElementById('concertList');
+        if (data.length === 0) {
+          list.innerHTML = "<li>No upcoming concerts.</li>";
+        } else {
+          data.forEach(c => {
+            const li = document.createElement('li');
+            li.innerHTML = `🎤 <strong>${c.name}</strong> — 📍 ${c.city}, ${c.venue.name}, ${c.venue.address} — 📅 ${c.concertDate}`;
+            list.appendChild(li);
+          });
+        }
+      })
+      .catch(error => {
+        console.error("Error loading concerts:", error);
+        document.getElementById('error').style.display = 'block';
+      });
+  </script>
+</body>
+</html>
